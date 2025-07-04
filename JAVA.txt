@@ -1,0 +1,193 @@
+const questions = [
+  {
+    question: "Which of the following is a strong password?",
+    options: ["password123", "qwerty", "Tr0ub4dor&3", "123456"],
+    correct: 2,
+    level: "Level 1: Easy - Password Safety"
+  },
+  {
+    question: "What does 2FA stand for?",
+    options: ["Two-Factor Authentication", "Twice Full Access", "Two-Firewall Arrangement", "Trusted File Access"],
+    correct: 0,
+    level: "Level 2: Easy - Account Protection"
+  },
+  {
+    question: "Which one is a secure website URL?",
+    options: ["http://example.com", "https://example.com", "ftp://example.com", "file://example.com"],
+    correct: 1,
+    level: "Level 3: Easy - Secure Connections"
+  },
+  {
+    question: "What should you do when you receive a suspicious email?",
+    options: ["Open it", "Reply asking who sent it", "Click any links inside", "Report or delete it"],
+    correct: 3,
+    level: "Level 4: Moderate - Email Security"
+  },
+  {
+    question: "Which is NOT a form of malware?",
+    options: ["Virus", "Worm", "Firewall", "Trojan"],
+    correct: 2,
+    level: "Level 5: Moderate - Malware Awareness"
+  },
+  {
+    question: "What is phishing?",
+    options: ["A cyberattack to trick users into giving personal info", "A hardware failure", "A type of spam filter", "An antivirus tool"],
+    correct: 0,
+    level: "Level 6: Moderate - Phishing"
+  },
+  {
+    question: "What's the safest way to store passwords?",
+    options: ["On sticky notes", "In your browser", "Using a password manager", "Text file on desktop"],
+    correct: 2,
+    level: "Level 7: Hard - Password Management"
+  },
+  {
+    question: "What does encryption do?",
+    options: ["Speeds up the internet", "Protects data by scrambling it", "Deletes files permanently", "Blocks ads"],
+    correct: 1,
+    level: "Level 8: Hard - Data Protection"
+  },
+  {
+    question: "Which type of attack uses many computers to overload a server?",
+    options: ["Phishing", "DDoS", "Ransomware", "Trojan"],
+    correct: 1,
+    level: "Level 9: Hard - Network Security"
+  },
+  {
+    question: "What should you do before clicking any link in a message?",
+    options: ["Click quickly to avoid timeout", "Ignore it always", "Hover to check the URL", "Forward to everyone"],
+    correct: 2,
+    level: "Level 10: Hard - Safe Browsing"
+  }
+];
+
+let currentQuestion = 0;
+let score = 0;
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const nextBtn = document.getElementById("next-btn");
+const resultEl = document.getElementById("result");
+const scoreEl = document.getElementById("score");
+const feedbackImg = document.getElementById("feedback-image");
+const progressEl = document.getElementById("progress");
+const levelNameEl = document.getElementById("level-name");
+
+function showQuestion() {
+  const q = questions[currentQuestion];
+  questionEl.textContent = q.question;
+  levelNameEl.textContent = q.level;
+  optionsEl.innerHTML = "";
+  resultEl.textContent = "";
+  feedbackImg.textContent = "";
+  nextBtn.disabled = true;
+
+  q.options.forEach((option, index) => {
+    const btn = document.createElement("button");
+    btn.textContent = option;
+    btn.addEventListener("click", () => selectAnswer(btn, index, q.correct));
+    optionsEl.appendChild(btn);
+  });
+
+  updateProgressBar();
+}
+
+function updateProgressBar() {
+  const progressPercent = ((currentQuestion) / questions.length) * 100;
+  progressEl.style.width = `${progressPercent}%`;
+}
+
+function selectAnswer(button, selected, correct) {
+  const allButtons = optionsEl.querySelectorAll("button");
+  allButtons.forEach(btn => btn.disabled = true);
+
+  if (selected === correct) {
+    button.classList.add("correct");
+    resultEl.textContent = "✅ Correct!";
+    score++;
+    scoreEl.textContent = score;
+    feedbackImg.textContent = "😃";
+  } else {
+    button.classList.add("wrong");
+    resultEl.textContent = "❌ Incorrect.";
+    allButtons[correct].classList.add("correct");
+    feedbackImg.textContent = "😐";
+  }
+
+  nextBtn.disabled = false;
+}
+
+nextBtn.addEventListener("click", () => {
+  currentQuestion++;
+  if (currentQuestion < questions.length) {
+    showQuestion();
+  } else {
+    questionEl.textContent = "🎉 Quiz Completed!";
+    levelNameEl.textContent = "";
+    optionsEl.innerHTML = "";
+    resultEl.textContent = `Final Score: ${score}/${questions.length}`;
+    feedbackImg.textContent = "";
+    progressEl.style.width = "100%";
+    nextBtn.disabled = true;
+
+    if (score > 5) celebrate();
+  }
+});
+
+function celebrate() {
+  const canvas = document.createElement("canvas");
+  canvas.id = "confettiCanvas";
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext("2d");
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const particles = [];
+  for (let i = 0; i < 150; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      r: Math.random() * 6 + 4,
+      d: Math.random() * 150,
+      color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+      tilt: Math.floor(Math.random() * 10) - 10
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.lineWidth = p.r;
+      ctx.strokeStyle = p.color;
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x + p.tilt + p.r / 2, p.y + p.tilt);
+      ctx.stroke();
+    });
+    update();
+  }
+
+  function update() {
+    particles.forEach(p => {
+      p.y += Math.cos(p.d) + 1 + p.r / 2;
+      p.x += Math.sin(p.d);
+      if (p.y > canvas.height) {
+        p.y = -10;
+        p.x = Math.random() * canvas.width;
+      }
+    });
+  }
+
+  function animate() {
+    draw();
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  setTimeout(() => {
+    canvas.remove();
+  }, 7000);
+}
+
+showQuestion();

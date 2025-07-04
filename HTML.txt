@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberSmart: Security Quiz</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 CyberSmart: Security Quiz</h1>
+    <div id="level-name">Level 1: Password Safety</div>
+    <div id="progress-bar"><div id="progress"></div></div>
+    <div id="question-box">
+      <p id="question">Loading question...</p>
+      <div id="options"></div>
+      <button id="next-btn" disabled>Next</button>
+    </div>
+    <div id="result"></div>
+    <div id="feedback-image"></div>
+    <div id="score-box">Score: <span id="score">0</span></div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
